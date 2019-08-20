@@ -57,14 +57,6 @@
 </head>
 
 <body>
-    <!-- <div>
-        <p class="text-center">
-            <button id="randomizeData">Randomize Data</button>
-            <button id="addDataset">Add Dataset</button>
-            <!-- <button id="removeDataset">Remove Dataset</button> -->
-            <!-- <button id="addData">Add Data</button> -->
-        <!-- </p> -->
-    <!-- </div> --> 
     <div class="main">
         <div class="channels">
             <div class="column">
@@ -128,6 +120,11 @@
 			grey: 'rgb(201, 203, 207)'
 		};
 
+        var chartConfig={
+            duration: 8000,
+            delay: 1000,
+        }
+
 		function randomScalingFactor() {
             return Math.round(Math.random()*5);
 		}
@@ -149,153 +146,56 @@
 
 		var timeoutIDs = [];
         var tick=0;
-		function startFeed(index) {
-            
-			var receive = function() {
-                $.ajax("/query_data", {
+        var returnData;
+        function getDataByInterval(){
+            //todo;
+            $.ajax("/query_data", {
                 cache: false,
                 dataType: "json",
                 success: function(res){
                     res=JSON.parse(res);
-                    var rawData=res.data[index-1];
-                    var data=[];
-                    var count=0;
-                    rawData.forEach(function(item){
-                        data.push({
-                            x: Date.now()+(count++)*10,
-                            y: item
-                        })
-                    })
-                
-                    onReceive({
-                        index: index,
-                        data: data
-                    });
+                    returnData=res.data;
+                    for(var i=0; i<8; i++){
+                        var rawData=res.data[i];
+                        var data=[];
+                        var count=0;
+                        rawData.forEach(function(item){
+                            data.push({
+                                x: Date.now()+(count++)*10,
+                                y: item
+                            });
+                        });
+
+                        onReceive({
+                            index: i+1,
+                            data: data
+                        });
+                    }
+                    
                 },
+                    
                 error: function(){
-                    console.log("failing");
+                    console.log("connection fail");
                 }
 
             })
-                
-                
-                timeoutIDs[index] = setTimeout(receive, 1000 );
+        }
+		function startFeed() {
+            
+			var receive = function() {
+                getDataByInterval();
+                timeoutIDs = setTimeout(receive, 1000 );
 			}
-            timeoutIDs[index] = setTimeout(receive, 1000 );
+            timeoutIDs = setTimeout(receive, 1000 );
             
 		}
 
-		function stopFeed(index) {
-			clearTimeout(timeoutIDs[index]);
+		function stopFeed() {
+			clearTimeout(timeoutIDs);
 		}
 
 		var color = Chart.helpers.color;
-		var config1 = {
-			type: 'line',
-			data: {
-				datasets: [
-                {
-                    label: '采样点',
-					backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
-                    borderColor: chartColors.blue,
-                    borderWidth: 1,
-                    fill: false,
-					data: []
-				}]
-			},
-			options: {
-				title: {
-					display: true,
-					text: 'Channel 1'
-                },
-                elements:{
-                    point:{
-                        radius: 0
-                    }
-                },
-				scales: {
-					xAxes: [{
-						type: 'realtime',
-						realtime: {
-							duration: 16000,
-							delay: 0,
-						}
-					}],
-					yAxes: [{
-						scaleLabel: {
-							display: true,
-							labelString: '幅度/v',
-                            ticks: {
-                                // beginAtZero: true,
-                                // stepSize: 1,
-                                min: 0,
-                                max: 5
-                            }
-                    
-						}
-					}]
-				},
-				tooltips: {
-					mode: 'nearest',
-					intersect: false
-				},
-				hover: {
-					mode: 'nearest',
-					intersect: false
-				}
-			}
-        };
         
-        var config2 = {
-			type: 'line',
-			data: {
-				datasets: [
-                {
-                    label: '采样点',
-					backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
-                    borderColor: chartColors.blue,
-                    borderWidth: 1,
-                    fill: false,
-					data: []
-				}]
-			},
-			options: {
-				title: {
-					display: true,
-					text: 'Channel 1'
-                },
-                elements:{
-                    point:{
-                        radius: 0
-                    }
-                },
-				scales: {
-					xAxes: [{
-						type: 'realtime',
-						realtime: {
-							duration: 8000,
-							delay: 4000,
-						}
-					}],
-					yAxes: [{
-						scaleLabel: {
-							display: true,
-							labelString: '幅度/v'
-						}
-					}]
-				},
-				tooltips: {
-					mode: 'nearest',
-					intersect: false
-				},
-				hover: {
-					mode: 'nearest',
-					intersect: false
-				}
-			}
-		};
-
-
 		window.onload = function() {
             window.myChart=[];
                 var ctx1 = document.getElementById('chart1').getContext('2d');
@@ -326,8 +226,8 @@
                             xAxes: [{
                                 type: 'realtime',
                                 realtime: {
-                                    duration: 8000,
-                                    delay: 4000,
+                                    duration: chartConfig.duration,
+                                    delay: chartConfig.delay,
                                 }
                             }],
                             yAxes: [{
@@ -347,7 +247,6 @@
                         // }
                     }
                 });
-                window.myChart[1].config.options.title.text="Channel 1";
 
                 var ctx2 = document.getElementById('chart2').getContext('2d');
 			    window.myChart[2] = new Chart(ctx2, {
@@ -366,7 +265,7 @@
                     options: {
                         title: {
                             display: true,
-                            text: 'Channel 1'
+                            text: 'Channel 2'
                         },
                         elements:{
                             point:{
@@ -377,8 +276,8 @@
                             xAxes: [{
                                 type: 'realtime',
                                 realtime: {
-                                    duration: 8000,
-                                    delay: 4000,
+                                    duration: chartConfig.duration,
+                                    delay: chartConfig.delay,
                                 }
                             }],
                             yAxes: [{
@@ -398,7 +297,6 @@
                         }
                     }
                 });
-                window.myChart[2].config.options.title.text="Channel 2";
 
                 var ctx3 = document.getElementById('chart3').getContext('2d');
 			    window.myChart[3] = new Chart(ctx3, {
@@ -417,7 +315,7 @@
                     options: {
                         title: {
                             display: true,
-                            text: 'Channel 1'
+                            text: 'Channel 3'
                         },
                         elements:{
                             point:{
@@ -428,8 +326,8 @@
                             xAxes: [{
                                 type: 'realtime',
                                 realtime: {
-                                    duration: 8000,
-                                    delay: 4000,
+                                    duration: chartConfig.duration,
+                                    delay: chartConfig.delay,
                                 }
                             }],
                             yAxes: [{
@@ -449,7 +347,6 @@
                         }
                     }
                 });
-                window.myChart[3].config.options.title.text="Channel 3";
 
                 var ctx4 = document.getElementById('chart4').getContext('2d');
 			    window.myChart[4] = new Chart(ctx4, {
@@ -468,7 +365,7 @@
                     options: {
                         title: {
                             display: true,
-                            text: 'Channel 1'
+                            text: 'Channel 4'
                         },
                         elements:{
                             point:{
@@ -479,8 +376,8 @@
                             xAxes: [{
                                 type: 'realtime',
                                 realtime: {
-                                    duration: 8000,
-                                    delay: 4000,
+                                    duration: chartConfig.duration,
+                                    delay: chartConfig.delay,
                                 }
                             }],
                             yAxes: [{
@@ -500,7 +397,6 @@
                         }
                     }
                 });
-                window.myChart[4].config.options.title.text="Channel 4";
 
                 var ctx5 = document.getElementById('chart5').getContext('2d');
                 window.myChart[5] = new Chart(ctx5, {
@@ -530,8 +426,8 @@
                             xAxes: [{
                                 type: 'realtime',
                                 realtime: {
-                                    duration: 8000,
-                                    delay: 4000,
+                                    duration: chartConfig.duration,
+                                    delay: chartConfig.delay,
                                 }
                             }],
                             yAxes: [{
@@ -551,7 +447,6 @@
                         // }
                     }
                 });
-                window.myChart[5].config.options.title.text="Channel 5";
 
                 var ctx6 = document.getElementById('chart6').getContext('2d');
 			    window.myChart[6] = new Chart(ctx6, {
@@ -581,8 +476,8 @@
                             xAxes: [{
                                 type: 'realtime',
                                 realtime: {
-                                    duration: 8000,
-                                    delay: 4000,
+                                    duration: chartConfig.duration,
+                                    delay: chartConfig.delay,
                                 }
                             }],
                             yAxes: [{
@@ -602,7 +497,6 @@
                         }
                     }
                 });
-                window.myChart[6].config.options.title.text="Channel 6";
 
                 var ctx7 = document.getElementById('chart7').getContext('2d');
 			    window.myChart[7] = new Chart(ctx7, {
@@ -632,8 +526,8 @@
                             xAxes: [{
                                 type: 'realtime',
                                 realtime: {
-                                    duration: 8000,
-                                    delay: 4000,
+                                    duration: chartConfig.duration,
+                                    delay: chartConfig.delay,
                                 }
                             }],
                             yAxes: [{
@@ -653,7 +547,6 @@
                         }
                     }
                 });
-                window.myChart[7].config.options.title.text="Channel 7";
 
                 var ctx8 = document.getElementById('chart8').getContext('2d');
 			    window.myChart[8] = new Chart(ctx8, {
@@ -683,8 +576,8 @@
                             xAxes: [{
                                 type: 'realtime',
                                 realtime: {
-                                    duration: 8000,
-                                    delay: 4000,
+                                    duration: chartConfig.duration,
+                                    delay: chartConfig.delay,
                                 }
                             }],
                             yAxes: [{
@@ -704,61 +597,12 @@
                         }
                     }
                 });
-                window.myChart[8].config.options.title.text="Channel 8";
 			
-			startFeed(1);
-            startFeed(2);
-            startFeed(3);
-            startFeed(4);
-            startFeed(5);
-            startFeed(6);
-            startFeed(7);
-            startFeed(8);
+			startFeed();
 		};
 
-		// document.getElementById('randomizeData').addEventListener('click', function() {
-		// 	config.data.datasets.forEach(function(dataset) {
-		// 		dataset.data.forEach(function(dataObj) {
-		// 			dataObj.y = randomScalingFactor();
-		// 		});
-		// 	});
-		// 	window.myChart.update();
-		// });
-
 		var colorNames = Object.keys(chartColors);
-		// document.getElementById('addDataset').addEventListener('click', function() {
-		// 	var colorName = colorNames[config.data.datasets.length % colorNames.length];
-		// 	var newColor = chartColors[colorName];
-		// 	var newDataset = {
-		// 		label: 'Dataset ' + (config.data.datasets.length + 1),
-		// 		backgroundColor: color(newColor).alpha(0.5).rgbString(),
-		// 		borderColor: newColor,
-		// 		fill: false,
-		// 		lineTension: 0,
-		// 		data: []
-		// 	};
-
-		// 	config.data.datasets.push(newDataset);
-		// 	window.myChart.update();
-		// 	startFeed(config.data.datasets.length - 1);
-		// });
-
-		// document.getElementById('removeDataset').addEventListener('click', function() {
-		// 	stopFeed(config.data.datasets.length - 1);
-		// 	config.data.datasets.pop();
-		// 	window.myChart.update();
-		// });
-
-		// document.getElementById('addData').addEventListener('click', function() {
-		// 	config.data.datasets.forEach(function(dataset) {
-		// 		dataset.data.push({
-		// 			x: Date.now(),
-		// 			y: randomScalingFactor()
-		// 		});
-		// 	});
-		// 	window.myChart.update();
-        // });
-
+	
         function checkboxOnClick(checkbox, num){
             if(checkbox.checked==false){
                 $("#chart"+num).parent().hide();
