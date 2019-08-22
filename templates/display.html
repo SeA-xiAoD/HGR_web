@@ -181,12 +181,12 @@
             })
         }
 		function startFeed() {
-            
-			var receive = function() {
-                getDataByInterval();
-                timeoutIDs = setTimeout(receive, 1000 );
-			}
-            timeoutIDs = setTimeout(receive, 1000 );
+            setInterval(function(){ getDataByInterval(); }, 1000);
+			// var receive = function() {
+            //     getDataByInterval();
+            //     timeoutIDs = setTimeout(receive, 1000 );
+			// }
+            // timeoutIDs = setTimeout(receive, 1000 );
             
 		}
 
