@@ -123,17 +123,15 @@
         var chartConfig={
             duration: 8000,
             delay: 1000,
+            min: 0,
+            max: 5,
+            sampleRate: 1024,
         }
 
-		function randomScalingFactor() {
-            return Math.round(Math.random()*5);
-		}
+
 
 		function onReceive(event) {
-			// window.myChart[event.index].config.data.datasets[0].data.push({
-			// 	x: event.timestamp,
-			// 	y: event.value
-            // });
+		
             event.data.forEach(
                 function(item){
                     window.myChart[event.index].config.data.datasets[0].data.push(item);
@@ -161,7 +159,7 @@
                         var count=0;
                         rawData.forEach(function(item){
                             data.push({
-                                x: Date.now()+(count++)*10,
+                                x: Date.now()+(count++)*1000/chartConfig.sampleRate,
                                 y: item
                             });
                         });
@@ -190,6 +188,7 @@
             
 		}
 
+        //停止输入数据 暂时没用
 		function stopFeed() {
 			clearTimeout(timeoutIDs);
 		}
@@ -198,8 +197,9 @@
         
 		window.onload = function() {
             window.myChart=[];
-                var ctx1 = document.getElementById('chart1').getContext('2d');
-                window.myChart[1] = new Chart(ctx1, {
+
+                function produceConfig(index){
+                    var config={
                     type: 'line',
                     data: {
                         datasets: [
@@ -215,7 +215,7 @@
                     options: {
                         title: {
                             display: true,
-                            text: 'Channel 1'
+                            text: 'Channel '+index
                         },
                         elements:{
                             point:{
@@ -234,369 +234,41 @@
                                 scaleLabel: {
                                     display: true,
                                     labelString: '幅度/v'
+                                },
+                                ticks: {
+                                    min: chartConfig.min,
+                                    max: chartConfig.max
                                 }
                             }]
                         },
-                        // tooltips: {
-                        //     mode: 'nearest',
-                        //     intersect: false
-                        // },
-                        // hover: {
-                        //     mode: 'nearest',
-                        //     intersect: false
-                        // }
+                     }
                     }
-                });
+                    return config;
+                }
+                
+                var ctx1 = document.getElementById('chart1').getContext('2d');
+                window.myChart[1] = new Chart(ctx1, produceConfig(1));
 
                 var ctx2 = document.getElementById('chart2').getContext('2d');
-			    window.myChart[2] = new Chart(ctx2, {
-                    type: 'line',
-                    data: {
-                        datasets: [
-                        {
-                            label: '采样点',
-                            backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
-                            borderColor: chartColors.blue,
-                            borderWidth: 1,
-                            fill: false,
-                            data: []
-                        }]
-                    },
-                    options: {
-                        title: {
-                            display: true,
-                            text: 'Channel 2'
-                        },
-                        elements:{
-                            point:{
-                                radius: 0
-                            }
-                        },
-                        scales: {
-                            xAxes: [{
-                                type: 'realtime',
-                                realtime: {
-                                    duration: chartConfig.duration,
-                                    delay: chartConfig.delay,
-                                }
-                            }],
-                            yAxes: [{
-                                scaleLabel: {
-                                    display: true,
-                                    labelString: '幅度/v'
-                                }
-                            }]
-                        },
-                        tooltips: {
-                            mode: 'nearest',
-                            intersect: false
-                        },
-                        hover: {
-                            mode: 'nearest',
-                            intersect: false
-                        }
-                    }
-                });
+			    window.myChart[2] = new Chart(ctx2, produceConfig(2));
 
                 var ctx3 = document.getElementById('chart3').getContext('2d');
-			    window.myChart[3] = new Chart(ctx3, {
-                    type: 'line',
-                    data: {
-                        datasets: [
-                        {
-                            label: '采样点',
-                            backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
-                            borderColor: chartColors.blue,
-                            borderWidth: 1,
-                            fill: false,
-                            data: []
-                        }]
-                    },
-                    options: {
-                        title: {
-                            display: true,
-                            text: 'Channel 3'
-                        },
-                        elements:{
-                            point:{
-                                radius: 0
-                            }
-                        },
-                        scales: {
-                            xAxes: [{
-                                type: 'realtime',
-                                realtime: {
-                                    duration: chartConfig.duration,
-                                    delay: chartConfig.delay,
-                                }
-                            }],
-                            yAxes: [{
-                                scaleLabel: {
-                                    display: true,
-                                    labelString: '幅度/v'
-                                }
-                            }]
-                        },
-                        tooltips: {
-                            mode: 'nearest',
-                            intersect: false
-                        },
-                        hover: {
-                            mode: 'nearest',
-                            intersect: false
-                        }
-                    }
-                });
+			    window.myChart[3] = new Chart(ctx3, produceConfig(3));
 
                 var ctx4 = document.getElementById('chart4').getContext('2d');
-			    window.myChart[4] = new Chart(ctx4, {
-                    type: 'line',
-                    data: {
-                        datasets: [
-                        {
-                            label: '采样点',
-                            backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
-                            borderColor: chartColors.blue,
-                            borderWidth: 1,
-                            fill: false,
-                            data: []
-                        }]
-                    },
-                    options: {
-                        title: {
-                            display: true,
-                            text: 'Channel 4'
-                        },
-                        elements:{
-                            point:{
-                                radius: 0
-                            }
-                        },
-                        scales: {
-                            xAxes: [{
-                                type: 'realtime',
-                                realtime: {
-                                    duration: chartConfig.duration,
-                                    delay: chartConfig.delay,
-                                }
-                            }],
-                            yAxes: [{
-                                scaleLabel: {
-                                    display: true,
-                                    labelString: '幅度/v'
-                                }
-                            }] 
-                        },
-                        tooltips: {
-                            mode: 'nearest',
-                            intersect: false
-                        },
-                        hover: {
-                            mode: 'nearest',
-                            intersect: false
-                        }
-                    }
-                });
+			    window.myChart[4] = new Chart(ctx4, produceConfig(4));
 
                 var ctx5 = document.getElementById('chart5').getContext('2d');
-                window.myChart[5] = new Chart(ctx5, {
-                    type: 'line',
-                    data: {
-                        datasets: [
-                        {
-                            label: '采样点',
-                            backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
-                            borderColor: chartColors.blue,
-                            borderWidth: 1,
-                            fill: false,
-                            data: []
-                        }]
-                    },
-                    options: {
-                        title: {
-                            display: true,
-                            text: 'Channel 5'
-                        },
-                        elements:{
-                            point:{
-                                radius: 0
-                            }
-                        },
-                        scales: {
-                            xAxes: [{
-                                type: 'realtime',
-                                realtime: {
-                                    duration: chartConfig.duration,
-                                    delay: chartConfig.delay,
-                                }
-                            }],
-                            yAxes: [{
-                                scaleLabel: {
-                                    display: true,
-                                    labelString: '幅度/v'
-                                }
-                            }]
-                        },
-                        // tooltips: {
-                        //     mode: 'nearest',
-                        //     intersect: false
-                        // },
-                        // hover: {
-                        //     mode: 'nearest',
-                        //     intersect: false
-                        // }
-                    }
-                });
+                window.myChart[5] = new Chart(ctx5, produceConfig(5));
 
                 var ctx6 = document.getElementById('chart6').getContext('2d');
-			    window.myChart[6] = new Chart(ctx6, {
-                    type: 'line',
-                    data: {
-                        datasets: [
-                        {
-                            label: '采样点',
-                            backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
-                            borderColor: chartColors.blue,
-                            borderWidth: 1,
-                            fill: false,
-                            data: []
-                        }]
-                    },
-                    options: {
-                        title: {
-                            display: true,
-                            text: 'Channel 6'
-                        },
-                        elements:{
-                            point:{
-                                radius: 0
-                            }
-                        },
-                        scales: {
-                            xAxes: [{
-                                type: 'realtime',
-                                realtime: {
-                                    duration: chartConfig.duration,
-                                    delay: chartConfig.delay,
-                                }
-                            }],
-                            yAxes: [{
-                                scaleLabel: {
-                                    display: true,
-                                    labelString: '幅度/v'
-                                }
-                            }]
-                        },
-                        tooltips: {
-                            mode: 'nearest',
-                            intersect: false
-                        },
-                        hover: {
-                            mode: 'nearest',
-                            intersect: false
-                        }
-                    }
-                });
+			    window.myChart[6] = new Chart(ctx6, produceConfig(6));
 
                 var ctx7 = document.getElementById('chart7').getContext('2d');
-			    window.myChart[7] = new Chart(ctx7, {
-                    type: 'line',
-                    data: {
-                        datasets: [
-                        {
-                            label: '采样点',
-                            backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
-                            borderColor: chartColors.blue,
-                            borderWidth: 1,
-                            fill: false,
-                            data: []
-                        }]
-                    },
-                    options: {
-                        title: {
-                            display: true,
-                            text: 'Channel 7'
-                        },
-                        elements:{
-                            point:{
-                                radius: 0
-                            }
-                        },
-                        scales: {
-                            xAxes: [{
-                                type: 'realtime',
-                                realtime: {
-                                    duration: chartConfig.duration,
-                                    delay: chartConfig.delay,
-                                }
-                            }],
-                            yAxes: [{
-                                scaleLabel: {
-                                    display: true,
-                                    labelString: '幅度/v'
-                                }
-                            }]
-                        },
-                        tooltips: {
-                            mode: 'nearest',
-                            intersect: false
-                        },
-                        hover: {
-                            mode: 'nearest',
-                            intersect: false
-                        }
-                    }
-                });
+			    window.myChart[7] = new Chart(ctx7, produceConfig(7));
 
                 var ctx8 = document.getElementById('chart8').getContext('2d');
-			    window.myChart[8] = new Chart(ctx8, {
-                    type: 'line',
-                    data: {
-                        datasets: [
-                        {
-                            label: '采样点',
-                            backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
-                            borderColor: chartColors.blue,
-                            borderWidth: 1,
-                            fill: false,
-                            data: []
-                        }]
-                    },
-                    options: {
-                        title: {
-                            display: true,
-                            text: 'Channel 8'
-                        },
-                        elements:{
-                            point:{
-                                radius: 0
-                            }
-                        },
-                        scales: {
-                            xAxes: [{
-                                type: 'realtime',
-                                realtime: {
-                                    duration: chartConfig.duration,
-                                    delay: chartConfig.delay,
-                                }
-                            }],
-                            yAxes: [{
-                                scaleLabel: {
-                                    display: true,
-                                    labelString: '幅度/v'
-                                }
-                            }] 
-                        },
-                        tooltips: {
-                            mode: 'nearest',
-                            intersect: false
-                        },
-                        hover: {
-                            mode: 'nearest',
-                            intersect: false
-                        }
-                    }
-                });
+			    window.myChart[8] = new Chart(ctx8, produceConfig(8));
 			
 			startFeed();
 		};
