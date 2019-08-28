@@ -1,16 +1,19 @@
+from multiprocessing import Queue
+
 def _init():
-    global _global_dict
-    _global_dict = {}
+    global _global_queue
+    _global_queue = Queue(maxsize=0)
 
-def set_val(key, value):
-    _global_dict[key] = value
+def put_into_queue(value):
+    _global_queue.put(value)
 
-def get_val(key):
+def get_from_queue():
     try:
-        return  _global_dict[key]
-    except KeyError:
+        return _global_queue.get()
+    except Exception as e:
         return None
 
+def get_queue_remainder():
+    return _global_queue.qsize()
+
 _init()
-set_val("processed length", 0)
-set_val("total length", 0)

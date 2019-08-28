@@ -121,8 +121,10 @@
 		};
 
         var chartConfig={
-            duration: 8000,
+            duration: 256,
             delay: 1000,
+            sampleRate: 2048, // 采样率
+            postFreq: 1 // 每秒请求接口次数
         }
 
 		function randomScalingFactor() {
@@ -161,11 +163,11 @@
                         var count=0;
                         rawData.forEach(function(item){
                             data.push({
-                                x: Date.now()+(count++)*10,
+                                x: Date.now()+(count++)*(1000/chartConfig.sampleRate),
                                 y: item
                             });
                         });
-
+                        console.log(data)
                         onReceive({
                             index: i+1,
                             data: data
@@ -181,7 +183,7 @@
             })
         }
 		function startFeed() {
-            setInterval(function(){ getDataByInterval(); }, 1000);
+            setInterval(function(){ getDataByInterval(); }, 1000/chartConfig.postFreq);
 			// var receive = function() {
             //     getDataByInterval();
             //     timeoutIDs = setTimeout(receive, 1000 );
@@ -234,6 +236,10 @@
                                 scaleLabel: {
                                     display: true,
                                     labelString: '幅度/v'
+                                },
+                                ticks:{
+                                    min:0,
+                                    max: 2.5
                                 }
                             }]
                         },
@@ -284,6 +290,10 @@
                                 scaleLabel: {
                                     display: true,
                                     labelString: '幅度/v'
+                                },
+                                ticks:{
+                                    min:0,
+                                    max: 2.5
                                 }
                             }]
                         },
@@ -334,6 +344,10 @@
                                 scaleLabel: {
                                     display: true,
                                     labelString: '幅度/v'
+                                },
+                                ticks:{
+                                    min:0,
+                                    max: 2.5
                                 }
                             }]
                         },
@@ -384,8 +398,13 @@
                                 scaleLabel: {
                                     display: true,
                                     labelString: '幅度/v'
+                                },
+                                ticks:{
+                                    min:0,
+                                    max: 2.5
                                 }
-                            }] 
+                            }
+                            ] 
                         },
                         tooltips: {
                             mode: 'nearest',
@@ -434,6 +453,10 @@
                                 scaleLabel: {
                                     display: true,
                                     labelString: '幅度/v'
+                                },
+                                ticks:{
+                                    min:0,
+                                    max: 2.5
                                 }
                             }]
                         },
@@ -484,6 +507,10 @@
                                 scaleLabel: {
                                     display: true,
                                     labelString: '幅度/v'
+                                },
+                                ticks:{
+                                    min:0,
+                                    max: 2.5
                                 }
                             }]
                         },
@@ -534,6 +561,10 @@
                                 scaleLabel: {
                                     display: true,
                                     labelString: '幅度/v'
+                                },
+                                ticks:{
+                                    min:0,
+                                    max: 2.5
                                 }
                             }]
                         },
@@ -584,6 +615,10 @@
                                 scaleLabel: {
                                     display: true,
                                     labelString: '幅度/v'
+                                },
+                                ticks:{
+                                    min:0,
+                                    max: 2.5
                                 }
                             }] 
                         },
