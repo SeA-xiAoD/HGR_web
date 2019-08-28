@@ -90,23 +90,22 @@
         </div>
         <div class="controls">
             <div class="interface clearfix">
-                    <label>Channels</label>
-                    <div class="form-group">
-                        <div class="checkbox"> 
-                            <div><input type="checkbox" id="cb1" checked="checked" onclick="checkboxOnClick(this, 1)"/><label for="cb1">Channel 1</label></div> 
-                            <div><input type="checkbox" id="cb2" checked="checked" onclick="checkboxOnClick(this, 2)"/><label for="cb2">Channel 2</label></div> 
-                            <div><input type="checkbox" id="cb3" checked="checked" onclick="checkboxOnClick(this, 3)"/><label for="cb3">Channel 3</label></div> 
-                            <div><input type="checkbox" id="cb4" checked="checked" onclick="checkboxOnClick(this, 4)"/><label for="cb4">Channel 4</label></div> 
-                        </div> 
-                        <div class="checkbox">
-                            <div><input type="checkbox" id="cb5" checked="checked" onclick="checkboxOnClick(this, 5)"/><label for="cb5">Channel 5</label></div> 
-                            <div><input type="checkbox" id="cb6" checked="checked" onclick="checkboxOnClick(this, 6)"/><label for="cb6>">Channel 6</label></div> 
-                            <div><input type="checkbox" id="cb7" checked="checked" onclick="checkboxOnClick(this, 7)"/><label for="cb6>">Channel 7</label></div> 
-                            <div><input type="checkbox" id="cb8" checked="checked" onclick="checkboxOnClick(this, 8)"/><label for="cb6>">Channel 8</label></div> 
-                        </div>
+                <label>Channels</label>
+                <div class="form-group">
+                    <div class="checkbox"> 
+                        <div><input type="checkbox" id="cb1" checked="checked" onclick="checkboxOnClick(this, 1)"/><label for="cb1">Channel 1</label></div> 
+                        <div><input type="checkbox" id="cb2" checked="checked" onclick="checkboxOnClick(this, 2)"/><label for="cb2">Channel 2</label></div> 
+                        <div><input type="checkbox" id="cb3" checked="checked" onclick="checkboxOnClick(this, 3)"/><label for="cb3">Channel 3</label></div> 
+                        <div><input type="checkbox" id="cb4" checked="checked" onclick="checkboxOnClick(this, 4)"/><label for="cb4">Channel 4</label></div> 
+                    </div> 
+                    <div class="checkbox">
+                        <div><input type="checkbox" id="cb5" checked="checked" onclick="checkboxOnClick(this, 5)"/><label for="cb5">Channel 5</label></div> 
+                        <div><input type="checkbox" id="cb6" checked="checked" onclick="checkboxOnClick(this, 6)"/><label for="cb6>">Channel 6</label></div> 
+                        <div><input type="checkbox" id="cb7" checked="checked" onclick="checkboxOnClick(this, 7)"/><label for="cb6>">Channel 7</label></div> 
+                        <div><input type="checkbox" id="cb8" checked="checked" onclick="checkboxOnClick(this, 8)"/><label for="cb6>">Channel 8</label></div> 
                     </div>
-                        
                 </div>
+            </div>
         </div>
     </div>
     <script>
@@ -122,7 +121,7 @@
 		};
 
         //常用图表配置参数
-        var chartConfig={
+        var chartConfig = {
             duration: 256,
             delay: 1000,
             sampleRate: 2048, // 采样率
@@ -131,12 +130,9 @@
             max: 2.5, //y坐标最大值
         }
 
-
-
 		function onReceive(event) {
-		
             event.data.forEach(
-                function(item){
+                function(item) {
                     window.myChart[event.index].config.data.datasets[0].data.push(item);
                 }
             )
@@ -146,53 +142,48 @@
 		}
 
 		var timeoutIDs = [];
-        var tick=0;
+        var tick = 0;
         var returnData;
+
         //获取数据接口
-        function getDataByInterval(){
+        function getDataByInterval() {
             //todo;
             $.ajax("/query_data", {
                 cache: false,
                 dataType: "json",
-                success: function(res){
-                    res=JSON.parse(res);
-                    returnData=res.data;
-                    for(var i=0; i<8; i++){
-                        var rawData=res.data[i];
-                        var data=[];
-                        var count=0;
-                        rawData.forEach(function(item){
+                success: function(res) {
+                    res = JSON.parse(res);
+                    returnData = res.data;
+                    for (var i = 0; i < 8; i++) {
+                        var rawData = res.data[i];
+                        var data = [];
+                        var count = 0;
+                        rawData.forEach(function(item) {
                             data.push({
-                                x: Date.now()+(count++)*(1000/chartConfig.sampleRate),
+                                x: Date.now() + (count++) * (1000 / chartConfig.sampleRate),
                                 y: item
                             });
                         });
-                        console.log(data)
+                        console.log(data);
                         onReceive({
-                            index: i+1,
+                            index: i + 1,
                             data: data
                         });
                     }
-                    
                 },
                     
-                error: function(){
+                error: function() {
                     console.log("connection fail");
                 }
-
             })
         }
 		function startFeed() {
-            setInterval(function(){ getDataByInterval(); }, 1000/chartConfig.postFreq);
-			// var receive = function() {
-            //     getDataByInterval();
-            //     timeoutIDs = setTimeout(receive, 1000 );
-			// }
-            // timeoutIDs = setTimeout(receive, 1000 );
-            
+            setInterval(function(){
+                getDataByInterval();
+            }, 1000 / chartConfig.postFreq);
 		}
 
-        //停止输入数据 暂时没用
+        // 停止输入数据 暂时没用
 		function stopFeed() {
 			clearTimeout(timeoutIDs);
 		}
@@ -200,11 +191,11 @@
 		var color = Chart.helpers.color;
         
 		window.onload = function() {
-            window.myChart=[];
+            window.myChart = [];
 
                 //配置工厂
-                function produceConfig(index){
-                    var config={
+                function produceConfig(index) {
+                    var config = {
                     type: 'line',
                     data: {
                         datasets: [
@@ -220,7 +211,7 @@
                     options: {
                         title: {
                             display: true,
-                            text: 'Channel '+index
+                            text: 'Channel ' + index
                         },
                         elements:{
                             point:{
@@ -279,15 +270,15 @@
 			startFeed();
 		};
 
+        // 没用到
 		var colorNames = Object.keys(chartColors);
     
-        //控制通道图表显示
-        function checkboxOnClick(checkbox, num){
-            if(checkbox.checked==false){
-                $("#chart"+num).parent().hide();
-            }
-            else{
-                $("#chart"+num).parent().show();
+        // 控制通道图表显示
+        function checkboxOnClick(checkbox, num) {
+            if (checkbox.checked == false) {
+                $("#chart" + num).parent().hide();
+            } else {
+                $("#chart" + num).parent().show();
             }
         }
     
