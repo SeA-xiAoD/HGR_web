@@ -133,6 +133,7 @@
 		function onReceive(event) {
             event.data.forEach(
                 function(item) {
+                    console.log(item);
                     window.myChart[event.index].config.data.datasets[0].data.push(item);
                 }
             )
