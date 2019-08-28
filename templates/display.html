@@ -110,6 +110,7 @@
         </div>
     </div>
     <script>
+        //图表颜色配置
 		var chartColors = {
 			red: 'rgb(255, 99, 132)',
 			orange: 'rgb(255, 159, 64)',
@@ -120,6 +121,7 @@
 			grey: 'rgb(201, 203, 207)'
 		};
 
+        //常用图表配置参数
         var chartConfig={
             duration: 8000,
             delay: 1000,
@@ -145,6 +147,7 @@
 		var timeoutIDs = [];
         var tick=0;
         var returnData;
+        //获取数据接口
         function getDataByInterval(){
             //todo;
             $.ajax("/query_data", {
@@ -198,6 +201,7 @@
 		window.onload = function() {
             window.myChart=[];
 
+                //配置工厂
                 function produceConfig(index){
                     var config={
                     type: 'line',
@@ -246,6 +250,7 @@
                     return config;
                 }
                 
+                //绘制八个通道的实时数据表
                 var ctx1 = document.getElementById('chart1').getContext('2d');
                 window.myChart[1] = new Chart(ctx1, produceConfig(1));
 
@@ -274,7 +279,8 @@
 		};
 
 		var colorNames = Object.keys(chartColors);
-	
+    
+        //控制通道图表显示
         function checkboxOnClick(checkbox, num){
             if(checkbox.checked==false){
                 $("#chart"+num).parent().hide();
