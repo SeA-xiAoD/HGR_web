@@ -123,11 +123,12 @@
 
         //常用图表配置参数
         var chartConfig={
-            duration: 8000,
+            duration: 256,
             delay: 1000,
-            min: 0,
-            max: 5,
-            sampleRate: 1024,
+            sampleRate: 2048, // 采样率
+            postFreq: 1, // 每秒请求接口次数，
+            min: 0, //y坐标最小值
+            max: 2.5, //y坐标最大值
         }
 
 
@@ -162,11 +163,11 @@
                         var count=0;
                         rawData.forEach(function(item){
                             data.push({
-                                x: Date.now()+(count++)*1000/chartConfig.sampleRate,
+                                x: Date.now()+(count++)*(1000/chartConfig.sampleRate),
                                 y: item
                             });
                         });
-
+                        console.log(data)
                         onReceive({
                             index: i+1,
                             data: data
@@ -182,12 +183,12 @@
             })
         }
 		function startFeed() {
-            
-			var receive = function() {
-                getDataByInterval();
-                timeoutIDs = setTimeout(receive, 1000 );
-			}
-            timeoutIDs = setTimeout(receive, 1000 );
+            setInterval(function(){ getDataByInterval(); }, 1000/chartConfig.postFreq);
+			// var receive = function() {
+            //     getDataByInterval();
+            //     timeoutIDs = setTimeout(receive, 1000 );
+			// }
+            // timeoutIDs = setTimeout(receive, 1000 );
             
 		}
 
@@ -250,7 +251,7 @@
                     return config;
                 }
                 
-                //绘制八个通道的实时数据表
+                //绘制八个通道的实时数据图表
                 var ctx1 = document.getElementById('chart1').getContext('2d');
                 window.myChart[1] = new Chart(ctx1, produceConfig(1));
 

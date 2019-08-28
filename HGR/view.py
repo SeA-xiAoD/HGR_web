@@ -1,20 +1,32 @@
 from django.shortcuts import render
 from django.http import JsonResponse, FileResponse
 import json
-import  global_var as global_dict
+from global_var import get_from_queue, get_queue_remainder
 import os
 import time
 import numpy as np
+from fpga_server import start_fpga_server, temp_output
+from multiprocessing import Process
+from threading import Thread
+
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 
 def display(request):
+        
+    args = {
+        "server_ip" : "192.168.1.102",
+        "post_freq" : 1,
+    }
+    fpga_server_thread = Thread(target=start_fpga_server, kwargs=args)
+    fpga_server_thread.start()
     return render(request, 'display.html')
 
 
 def query_data(requset):
     dic = {}
-    data = np.random.rand(8, 100)
+    data = get_from_queue()
+    print(data.shape, get_queue_remainder())
     dic["data"] = data.tolist()
     json_dump = json.dumps(dic)
     return JsonResponse(json_dump, safe=False)
