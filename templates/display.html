@@ -25,7 +25,7 @@
             padding: 15px;
         }
         .column{
-            flex: 50%;
+            flex: 40%;
         }
         #chart, .chart-box {
             margin: 35px 20px;
@@ -53,6 +53,90 @@
             width: 49%;
             display: inline-block;
         }
+        #canvas-size{
+            width: 50px;
+        }
+
+        .switch{
+            display:inline-block;
+            position: relative;
+    top: 5px;
+            /* vertical-align: middle; */
+        }
+
+        input.cmn-toggle-round + label {
+  padding: 2px;
+  width: 40px;
+  height: 20px;
+  background-color: #dddddd;
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
+  -ms-border-radius: 20px;
+  -o-border-radius: 20px;
+  border-radius: 20px;
+  behavior: url(./css/PIE.htc); 
+}
+input.cmn-toggle-round + label:before, input.cmn-toggle-round + label:after {
+  display: block;
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  bottom: 1px;
+  content: "";
+}
+input.cmn-toggle-round + label:before {
+  right: 1px;
+  background-color: #f1f1f1;
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
+  -ms-border-radius: 20px;
+  -o-border-radius: 20px;
+  border-radius: 20px;
+  -webkit-transition: background 0.4s;
+  -moz-transition: background 0.4s;
+  -o-transition: background 0.4s;
+  transition: background 0.4s;
+  behavior: url(./css/PIE.htc); 
+}
+input.cmn-toggle-round + label:after {
+  width: 20px;
+  background-color: #fff;
+  -webkit-border-radius: 100%;
+  -moz-border-radius: 100%;
+  -ms-border-radius: 100%;
+  -o-border-radius: 100%;
+  border-radius: 100%;
+  -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  -webkit-transition: margin 0.4s;
+  -moz-transition: margin 0.4s;
+  -o-transition: margin 0.4s;
+  transition: margin 0.4s;
+  behavior: url(./css/PIE.htc); 
+}
+input.cmn-toggle-round:checked + label:before {
+  background-color: #8ce196;
+}
+input.cmn-toggle-round:checked + label:after {
+  margin-left: 20px;
+}
+
+.cmn-toggle {
+  position: absolute;
+  margin-left: -9999px;
+  visibility: hidden;
+}
+.cmn-toggle + label {
+  display: block;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
     </style>
 </head>
 
@@ -106,6 +190,18 @@
                     </div>
                 </div>
             </div>
+            <div class="interface clearfix">
+                <label for="">Canvas Size</label>
+                <input id="canvas-size" type="text" placeholder="//todo;">%
+                <button onclick="onSizeConfirm()">确认</button>
+            </div>
+            <div class="interface">
+                <span id="isStoreOn">停止</span><label for="">保存数据</label>
+                <div class="switch">
+                    <input id="cmn-toggle-1" class="cmn-toggle cmn-toggle-round"  type="checkbox" onclick="onStoreData(this)">
+                    <label for="cmn-toggle-1"></label>
+                </div>
+            </div>
         </div>
     </div>
     <script>
@@ -122,12 +218,56 @@
 
         //常用图表配置参数
         var chartConfig = {
-            duration: 2048,
+            duration: 2048, //窗口时间大小
             delay: 1000,
             sampleRate: 64, // 采样率
             postFreq: 0.5, // 每秒请求接口次数，
             min: 0, //y坐标最小值
             max: 2.5, //y坐标最大值
+        }
+
+        //是否打印日志
+        var PRINT_LOG=false;
+
+        function onStoreData(target){
+            if(target.checked){
+                $.ajax("/store/on",{
+                    cache: false,
+                    success: function(res){
+                        if(PRINT_LOG){
+                            console.log(res);
+                        }
+                        $("#isStoreOn").html("开始");
+                    },
+                    error: function(res){
+                        if(PRINT_LOG){
+                            console.log(res);
+                        }
+                    }
+                })
+            }else{
+                $.ajax("/store/off",{
+                    cache: false,
+                    success: function(res){
+                        if(PRINT_LOG){
+                            console.log(res);
+                        }
+                        $("#isStoreOn").html("停止");
+                    },
+                    error: function(res){
+                        if(PRINT_LOG){
+                            console.log(res);
+                        }
+                    }
+                });
+                $("#isStoreOn").html("停止");
+            }
+        }
+
+        function onSizeConfirm(){
+            var size=$("#canvas-size").val();
+            $(".channels").css("flex",size+"%");
+            console.log(size);
         }
 
 		function onReceive(event) {
@@ -189,7 +329,7 @@
         }
 		function startFeed() {
             setInterval(function(){
-                getDataByInterval();
+                // getDataByInterval();
             }, 1000 / chartConfig.postFreq);
 		}
 
