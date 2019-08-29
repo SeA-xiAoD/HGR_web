@@ -13,10 +13,10 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 
 def display(request):
-        
+    global args
     args = {
         "server_ip" : "192.168.1.102",
-        "post_freq" : 1,
+        "post_freq" : 0.5,
     }
     fpga_server_thread = Thread(target=start_fpga_server, kwargs=args)
     fpga_server_thread.start()
@@ -26,6 +26,7 @@ def display(request):
 def query_data(requset):
     dic = {}
     data = get_from_queue()
+    data = data[:,::32]
     print(data.shape, get_queue_remainder())
     dic["data"] = data.tolist()
     json_dump = json.dumps(dic)

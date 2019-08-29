@@ -42,7 +42,7 @@ def start_fpga_server(server_ip = "192.168.1.102", server_port = 8080,
         else:
             data_buffer += data
 
-        if count % (32 // post_freq) == 0:
+        if count % int(64 / post_freq / 2) == 0:
             processed_data = processing_data(data_buffer)
             print(processed_data.shape)
             put_into_queue(processed_data)

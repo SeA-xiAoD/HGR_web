@@ -122,10 +122,10 @@
 
         //常用图表配置参数
         var chartConfig = {
-            duration: 256,
+            duration: 2048,
             delay: 1000,
-            sampleRate: 2048, // 采样率
-            postFreq: 1, // 每秒请求接口次数，
+            sampleRate: 64, // 采样率
+            postFreq: 0.5, // 每秒请求接口次数，
             min: 0, //y坐标最小值
             max: 2.5, //y坐标最大值
         }
@@ -133,12 +133,15 @@
 		function onReceive(event) {
             event.data.forEach(
                 function(item) {
-                    console.log(item);
+                    // debug用
+                    // if (event.index == 1) {
+                    //     console.log(item);
+                    // }
                     window.myChart[event.index].config.data.datasets[0].data.push(item);
                 }
             )
 			window.myChart[event.index].update({
-				preservation: true
+				preservation: false
 			});
 		}
 
@@ -159,13 +162,19 @@
                         var rawData = res.data[i];
                         var data = [];
                         var count = 0;
+                        var current_time = Date.now();
+                        // debug用
+                        // if (i == 0){
+                        //     console.log(res.data);  
+                        // }
                         rawData.forEach(function(item) {
                             data.push({
-                                x: Date.now() + (count++) * (1000 / chartConfig.sampleRate),
+                                x: current_time + (count++) * (1000 / chartConfig.sampleRate),
                                 y: item
                             });
                         });
-                        console.log(data);
+                        // debug用
+                        // console.log(data);
                         onReceive({
                             index: i + 1,
                             data: data
