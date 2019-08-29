@@ -95,7 +95,7 @@
 
         //常用图表配置参数
         var chartConfig = {
-            duration: 8000, //窗口时间大小
+            duration: 4000, //窗口时间大小
             delay: 1000,
             sampleRate: 64, // 采样率
             postFreq: 0.5, // 每秒请求接口次数，
@@ -113,7 +113,7 @@
 
         function onStoreData(target){
             if(target.checked){
-                $.ajax("/store/on",{
+                $.ajax("/store_on",{
                     cache: false,
                     success: function(res){
                         if(PRINT_LOG){
@@ -128,7 +128,7 @@
                     }
                 })
             }else{
-                $.ajax("/store/off",{
+                $.ajax("/store_off",{
                     cache: false,
                     success: function(res){
                         if(PRINT_LOG){
@@ -212,7 +212,7 @@
         }
 		function startFeed() {
             setInterval(function(){
-                // getDataByInterval();
+                getDataByInterval();
             }, 1000 / chartConfig.postFreq);
 		}
 

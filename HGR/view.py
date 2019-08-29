@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse, FileResponse
 import json
-from global_var import get_from_queue, get_queue_remainder
+from global_var import get_from_queue, get_queue_remainder, store_off_switch, store_on_switch, get_switch
 import os
 import time
 import numpy as np
@@ -29,5 +29,21 @@ def query_data(requset):
     data = data[:,::32]
     print(data.shape, get_queue_remainder())
     dic["data"] = data.tolist()
+    json_dump = json.dumps(dic)
+    return JsonResponse(json_dump, safe=False)
+
+
+def store_on(request):
+    store_on_switch()
+    dic = {}
+    dic["success"] = True
+    json_dump = json.dumps(dic)
+    return JsonResponse(json_dump, safe=False)
+
+
+def store_off(request):
+    store_off_switch()
+    dic = {}
+    dic["success"] = True
     json_dump = json.dumps(dic)
     return JsonResponse(json_dump, safe=False)

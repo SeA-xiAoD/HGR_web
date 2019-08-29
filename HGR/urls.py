@@ -22,4 +22,6 @@ urlpatterns = [
     url('display', view.display),
     url('query_data', view.query_data),
     url('^$', view.display),
+    url('store_on', view.store_on),
+    url('store_off', view.store_off)
 ]
